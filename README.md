@@ -2,28 +2,40 @@
 
 ## Project Overview
 
-This project establishes a production-ready, highly secure cloud data warehouse foundation inside Snowflake by executing an automated batch ingestion from MotherDuck.
+This project demonstrates a production-grade, end-to-end data engineering pipeline that orchestrates batch data ingestion, establishes enterprise warehouse governance, and models raw data for downstream business intelligence.
 
-The core architectural goal of this project was to establish a fully optimized, governed landing zone for raw data. By designing the compute infrastructure, access controls, and object layers natively inside Snowflake, the environment is now explicitly architected to act as a seamless source layer for a downstream dbt (Data Build Tool) project to build modular data models, staging layers, and denormalized data marts.
+The architecture bridges an external MotherDuck catalog into a highly secure, optimized Snowflake cloud data warehouse. This governed environment serves as the foundational source layer for a modular dbt (Data Build Tool) project, transforming raw ingredients into production-ready data marts.
+
+## Repository Structure
+
+The repository is organized into distinct functional layers to mirror modern data engineering team standards:
+- [`ingestion`](/ingestion/): a Python-driven data orchestration and extraction script.
+- [`snowflake_setup`](/snowflake_setup/): Warehouse infrastructure, roles & access, cost controls, and data resiliency.
+- [`dbt`](/dbt/): Modular data transformation models, schema tests, and documentation.
 
 ## Infrastructure & Architecture Components
 
-### 1. Source Extraction & Ingestion
+### [Ingestion Layer (Python & MotherDuck)](/ingestion/)
 
-- Developed a Python-driven automation script [`motherduck_migration.py`](/ingestion/motherduck_migration.py) leveraging the `snowflake-connector-python` library to dynamically extract source tables from a MotherDuck shared catalog (`data_jobs`)
-- Configured local secure storage caching modules to natively resolve Snowflake's Multi-Factor Authentication (MFA/TOTP) gates, establishing an automated, secure session handshake
-- Separated infrastructure secrets from runtime logic by managing keys via a decoupled local environment layer (`.env`)
+Located in the [ingestion](/ingestion/) directory, this layer handles the extraction and landing of source data:
 
-### 2. Production Snowflake Administration & FinOps Governance
+- **Automated Extraction:** Developed a decoupled Python automation script [`motherduck_migration.py`](/ingestion/motherduck_migration.py) leveraging the `snowflake-connector-python` library to dynamically pull source tables from a shared MotherDuck catalog.
+- **Secure Session Handshake:** Implemented a caching mechanism to elegantly resolve Snowflake Multi-Factor Authentication (MFA/TOTP) gates, ensuring secure, non-interactive script execution.
+- **Environment Isolation:** Separated infrastructure secrets and connection strings from the core runtime logic using a decoupled environment layer `.env` to prevent credential leaks.
 
-- **Role-Based Access Control (RBAC):** Designed and enforced an enterprise-grade security model using specialized privilege rings [`sf_roles.sql`](/snowflake_setup/sf_roles.sql). Built custom operational roles (`engineering_role`, `analyst_role`), isolating access to ensure engineers retain structural administration over ingestion schemas while analysts are limited strictly to future presentation views.
-- **Warehouse Optimization & Cost Controls:** Configured the `data_jobs` virtual warehouse to minimize cloud credit consumption by dropping the active cluster auto-suspend window to 60 seconds [`sf_cost_controls.sql`](/snowflake_setup/sf_cost_controls.sql). Implemented automated Resource Monitors bound to strict monthly credit quotes to automatically terminate runaway queries.
-- **Data Resiliency & Disaster Recovery:** Activated Snowflake's native Time Travel engine on the ingestion schemas [`sf_data_resiliancy.sql`](/snowflake_setup/sf_data_resiliency.sql). Demonstrated business continuity techniques by configuring historical delta tracking and instant table recovery (`UNDROP`) to guard against destructive commands or manual deployment drops.
+### [Warehouse Governance & Administration Layer (Snowflake SQL)](/snowflake_setup/)
 
-### 3. Transformations & Data Modeling in dbt
+Located in the [snowflake_setup](/snowflake_setup/) directory, this layer configures the databas compute and security infrastructure:
+
+- **Role-Based Access Control (RBAC):** Enforced an enterprise-grade security model using a custom privilege hierarchy [`sf_roles.sql`](/snowflake_setup/sf_roles.sql). Created specialized functional roles (`engineering_role`, `analyst_role`) to strictly isolate read/write access, ensuring data engineers could control ingestion schemas while analysts are limited to downstream presentation layers.
+- **FinOps Optimization & Cost Controls:** Configured the virtual compute warehouse [`sf_cost_controls.sql`](/snowflake_setup/sf_cost_controls.sql) to minimize cloud credit spend by dropping the auto-suspend window to 60 seconds from 10 minutes. Implemented automated Resource Monitors mapped to strict monthly quotas to proactively kill runaway queries.
+- **Disaster Recovery & Resiliency:** Activated Snowflake's native Time Travel engine across ingestion schemas [`sf_data_resiliency.sql`](/snowflake_setup/sf_data_resiliency.sql). Documented business continuity protocols by establishing historical delta tracking and configuring table recovery commands (`UNDROP`) to safeguard against destructive operations.
+
+### [Transformation & Data Modeling Layer (dbt)](/dbt/)
+
 > **Status:** *In Active Development*
 
-With the raw source data successfully migrated into Snowflake, I am currently building out the transformation layer using **dbt (Data Build Tool)** to turn raw data into analytics-ready data marts.
+With the raw source data successfully migrated into Snowflake, I am currently building out the transformation layer using **dbt (Data Build Tool)** to turn raw data into analytics-ready data marts. This will be stored in the [dbt](/dbt/) directory.
 
 #### Key Objectives & Architecture:
 - **Multi-Layer Modeling:** Implementing a modular architecture moving from raw staging tables (Silver layer) to optimized business marts (Gold layer)
@@ -33,8 +45,8 @@ With the raw source data successfully migrated into Snowflake, I am currently bu
 
 ## Technical Skills Demonstrated
 
-- **Languages:** Python, SQL (Snowflake dialect), Git, Bash
+- **Languages:** Python, SQL (Snowflake dialect), Git, Bash, dbt
 - **Cloud Architecture:** Snowflake Cloud Data Warehouse Administration, MotherDuck Data Sharing
 - **Security & Governance:** Role-Based Access Control (RBAC), Privilege Hierarchies, IAM Principles
 - **Cloud FinOps:** Cost Optimization, Compute Isolation, Warehouse Resource Monitoring
-- **Methodologies:** ELT Target Design, System Environment Isolation, Disaster Recovery / Data Resiliency
+- **Methodologies:** ELT Target Design, System Environment Isolation, Disaster Recovery / Data Resiliency, Data Modeling
