@@ -16,9 +16,9 @@ The core architectural goal of this project was to establish a fully optimized, 
 
 ### 2. Production Snowflake Administration & FinOps Governance
 
-- **Role-Based Access Control (RBAC):** Designed and enforced an enterprise-grade security model using specialized privilege rings. Built custom operational roles (`engineering_role`, `analyst_role`), isolating access to ensure engineers retain structural administration over ingestion schemas while analysts are limited strictly to future presentation views.
-- **Warehouse Optimization & Cost Controls:** Configured the `data_jobs` virtual warehouse to minimize cloud credit consumption by dropping the active cluster auto-suspend window to 60 seconds. Implemented automated Resource Monitors bound to strict monthly credit quotes to automatically terminate runaway queries.
-- **Data Resiliency & Disaster Recovery:** Activated Snowflake's native Time Travel engine on the ingestion schemas. Demonstrated business continuity techniques by configuring historical delta tracking and instant table recovery (`UNDROP`) to guard against destructive commands or manual deployment drops.
+- **Role-Based Access Control (RBAC):** Designed and enforced an enterprise-grade security model using specialized privilege rings [`sf_roles.sql`](/MotherDuck_to_Snowflake_Migration/sf_roles.sql). Built custom operational roles (`engineering_role`, `analyst_role`), isolating access to ensure engineers retain structural administration over ingestion schemas while analysts are limited strictly to future presentation views.
+- **Warehouse Optimization & Cost Controls:** Configured the `data_jobs` virtual warehouse to minimize cloud credit consumption by dropping the active cluster auto-suspend window to 60 seconds [`sf_cost_controls.sql`](/MotherDuck_to_Snowflake_Migration/sf_cost_controls.sql). Implemented automated Resource Monitors bound to strict monthly credit quotes to automatically terminate runaway queries.
+- **Data Resiliency & Disaster Recovery:** Activated Snowflake's native Time Travel engine on the ingestion schemas [`sf_data_resiliancy.sql`](/MotherDuck_to_Snowflake_Migration/sf_data_resiliency.sql). Demonstrated business continuity techniques by configuring historical delta tracking and instant table recovery (`UNDROP`) to guard against destructive commands or manual deployment drops.
 
 ## Technical Skills Demonstrated
 
