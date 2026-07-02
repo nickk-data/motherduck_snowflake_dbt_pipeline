@@ -27,9 +27,9 @@ Located in the [ingestion](/ingestion/) directory, this layer handles the extrac
 
 Located in the [snowflake_setup](/snowflake_setup/) directory, this layer configures the databas compute and security infrastructure:
 
-- **Role-Based Access Control (RBAC):** Enforced an enterprise-grade security model using a custom privilege hierarchy [`sf_roles.sql`](/snowflake_setup/sf_roles.sql). Created specialized functional roles (`engineering_role`, `analyst_role`) to strictly isolate read/write access, ensuring data engineers could control ingestion schemas while analysts are limited to downstream presentation layers.
-- **FinOps Optimization & Cost Controls:** Configured the virtual compute warehouse [`sf_cost_controls.sql`](/snowflake_setup/sf_cost_controls.sql) to minimize cloud credit spend by dropping the auto-suspend window to 60 seconds from 10 minutes. Implemented automated Resource Monitors mapped to strict monthly quotas to proactively kill runaway queries.
-- **Disaster Recovery & Resiliency:** Activated Snowflake's native Time Travel engine across ingestion schemas [`sf_data_resiliency.sql`](/snowflake_setup/sf_data_resiliency.sql). Documented business continuity protocols by establishing historical delta tracking and configuring table recovery commands (`UNDROP`) to safeguard against destructive operations.
+- **Two-Tier Role-Based Access Control (RBAC):** Designed a decoupled governance hierarchy by mapping lower-level Object Access Roles (`raw_write_ar`, `raw_read_ar`) to functional business personas (`engineering_role`, `analyst_role`), ensuring strict privilege isolation across schemas [`sf_roles.sql`](/snowflake_setup/sf_roles.sql).
+- **Multi-Tier FinOps Circuit Breakers:** Optimized compute consumption via aggressive 60-second auto-suspend gates paired with a monthly Resource Monitor budget cap configured with a hard `suspend_immediate` trigger to forcefully terminate runaway or sub-optimal queries [`sf_cost_controls.sql`](/snowflake_setup/sf_cost_controls.sql). 
+- **Production Incident Recovery (Zero-Copy Cloning):** Formulated an enterprise disaster recovery protocol mimicking pipeline failures. Documented the use of state-targeted Time Travel (via Query ID markers) to perform Zero-Copy Cloning and metadata `swap with` table restoration to resolve data corruption with zero platform downtime [`sf_data_resiliency.sql`](/snowflake_setup/sf_data_resiliency.sql). 
 
 ### [Transformation & Data Modeling Layer (dbt)](/dbt/)
 
@@ -47,6 +47,6 @@ With the raw source data successfully migrated into Snowflake, I am currently bu
 
 - **Languages:** Python, SQL (Snowflake dialect), Git, Bash, dbt
 - **Cloud Architecture:** Snowflake Cloud Data Warehouse Administration, MotherDuck Data Sharing
-- **Security & Governance:** Role-Based Access Control (RBAC), Privilege Hierarchies, IAM Principles
-- **Cloud FinOps:** Cost Optimization, Compute Isolation, Warehouse Resource Monitoring
-- **Methodologies:** ELT Target Design, System Environment Isolation, Disaster Recovery / Data Resiliency, Data Modeling
+- **Security & Governance:** Two-Tier RBAC, Future Access Privileges, Asymmetric Cryptography, RSA Key-Pair Ingestion
+- **Cloud FinOps:** Resource Monitoring Circuit Breakers, `suspend_immediate` execution blocks
+- **Methodologies:** ELT Target Design, System Environment Isolation, Zero-Copy Cloning, Table Metadata Swapping, Data Modeling
