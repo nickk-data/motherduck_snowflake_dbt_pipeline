@@ -1,3 +1,6 @@
+# this is what i used to get the project started, as a one time batch ingestion it was the easiest and fastest way to get the data into snowflake
+# i am working on a v2 that is more robust and detailed. it will require time for me to learn the additional concepts to get it done correctly.
+
 import os
 from dotenv import load_dotenv
 import duckdb
