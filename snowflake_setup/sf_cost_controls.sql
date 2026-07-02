@@ -1,6 +1,6 @@
 use role accountadmin;
 
-alter warehouse data_jobs 
+alter warehouse compute_wh 
 set 
     auto_suspend = 60
     auto_resume = true;
@@ -11,7 +11,8 @@ frequency = monthly
 start_time = immediately
 triggers
     on 80 percent do notify
-    on 100 percent do suspend;
+    on 100 percent do suspend
+    on 110 percent do suspend_immediate;
 
-alter warehouse data_jobs set resource_monitor = credit_guard;
+alter warehouse compute_wh set resource_monitor = credit_guard;
 
